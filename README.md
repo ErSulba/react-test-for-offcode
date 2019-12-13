@@ -5,9 +5,9 @@
 
 ### Requerimientos
 
-* NodeJS + NPM
-* Webpack
-* Sass
+* NodeJS + NPM - https://nodejs.org/es/
+* Webpack - https://webpack.js.org/
+* Sass - https://sass-lang.com/
 
 ### Uso
 
