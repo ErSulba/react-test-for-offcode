@@ -16,4 +16,4 @@
 * Ejecutar `npm build` para compilar la app.
 
 ### Ejercicio
-* Revisar comentarios en archivo Main.js
+* Revisar comentarios en archivo src/components/Main.js
