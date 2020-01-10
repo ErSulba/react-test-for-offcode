@@ -1,10 +1,10 @@
 /*
 ===========================================================================================================================
 
-        ___ ___              __    
- ___   / _// _/____ ___  ___/ /___ 
+        ___ ___              __
+ ___   / _// _/____ ___  ___/ /___
 / _ \ / _// _// __// _ \/ _  // -_)
-\___//_/ /_/  \__/ \___/\_,_/ \__/ 
+\___//_/ /_/  \__/ \___/\_,_/ \__/
 
 
 ==================================
@@ -29,66 +29,86 @@ Tips:
 ===========================================================================================================================
  */
 
-
-import React, {Component} from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { Component, useState } from 'react'
+import { NavLink } from 'react-router-dom'
+import MovieCard from './MovieCard'
 
 //Librerías a incluir
-
 
 /**
  * API Key para conectar a OMDB
  * @type {String}
  */
-const API_KEY = "";
+const API_KEY = '44c3dae1'
 
-class Main extends Component{
+/**
+ * primero que nada el componente lo cambie a un componente funcional porque el reto estaba sencillo, la gran diferencia se nota en el uso de los hooks
+ */
+function Main() {
+  // aca use hooks para manejar el state de la aplicacion, uno para el valor del input y otro para almacenar el resultado de nuestra busqueda
+  const [searchResults, setSearchResults] = useState([])
+  const [userInput, setUserInput] = useState('')
 
-	constructor(props) {
-	  super(props);
-	  
-	  this.state = { 
-	  	
-	  };
-	}
+  /**
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} event este es el evento que le pasa la funcion onChange cada vez que se dispara
+   */
+  const handleChange = event => {
+    setUserInput(event.target.value)
+  }
 
-	render(){
+  /**
+   * handlesubmit se usa cuando el usuario presiona enter o el boton submit el cual procesa un fetch que hace un request a la API y nos devuelve un response, el cual nosotros usaremos despues
+   * @param {React.FormEvent<HTMLFormElement>} event este es el evento que le pasa la funcion onSubmit a nuestro metodo
+   */
+  const handleSubmit = event => {
+    event.preventDefault()
+    fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${userInput}`).then(
+      resp => {
+        // resp es la respuesta que obtuvimos del servidor pero asi no nos sirve de mucho, lo que debemos hacer es darle el formato adecuado con el metdo json() el cual devulve otra promesa con la respuesta ya formateada a como la deseamos
+        resp.json().then(json => {
+          json.Search && setSearchResults(json.Search)
+        })
+      }
+    )
+  }
 
-		return(
-			<div className="container-fluid">
-				<div className="row">
-					<div className="col text-center">
-						<div className="mainDiv">
-							<h3>OMDB</h3>
-							<h1>BUSQUEDA</h1>
-							<div className="d-inline-block">
-								<form action="" className="form-inline" onSubmit={this.getData}>
-									<div className="form-group">
-										<input type="text" placeholder="Titulo" className="form-control" value={this.state.searchTerm} onChange={this.onInputChange} />
-									</div>
-									<div className="form-group">
-										<button className="btn btn-primary">Buscar</button>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div className="row results">
-					<div className="col-6 col-sm-4 col-md-3 col-lg-3">
-						<div className="card" >
-							<img className="card-img-top" src="https://m.media-amazon.com/images/M/MV5BNjM0NTc0NzItM2FlYS00YzEwLWE0YmUtNTA2ZWIzODc2OTgxXkEyXkFqcGdeQXVyNTgwNzIyNzg@._V1_SX300.jpg" alt="Card image cap" />
-							<div className="card-body">
-								<h5 className="card-title">TITLE - Guardians of the Galaxy Vol. 2</h5>
-								<p className="card-text">DESC - Action, Adventure</p>
-								<a href="#link-to-imdb" className="btn btn-primary">Go to IMDB</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		)
-	}
+  /**
+   * esta constante es un simple map a nuestra variable de los resultados que estan almacenadas en nuestro estado usando el nuevo componente que creamos
+   */
+  const listOfMovies = searchResults.map(movie => (
+    <MovieCard {...movie}></MovieCard>
+  ))
+
+  return (
+    <div className='container-fluid'>
+      <div className='row'>
+        <div className='col text-center'>
+          <div className='mainDiv'>
+            <h3>OMDB</h3>
+            <h1>BUSQUEDA</h1>
+            <div className='d-inline-block'>
+              <form action='' className='form-inline' onSubmit={handleSubmit}>
+                <div className='form-group'>
+                  <input
+                    type='text'
+                    placeholder='Titulo'
+                    className='form-control'
+                    value={userInput}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className='form-group'>
+                  <button className='btn btn-primary'>Buscar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className='row results'>{listOfMovies}</div>
+    </div>
+  )
 }
 
-export default Main;
+export default Main
